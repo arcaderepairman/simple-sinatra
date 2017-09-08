@@ -4,7 +4,8 @@
 # to run make sure you have sudo access, but don't run as root.
 #
 
-sudo yum install python python-pip -y
+sudo yum install python epel-release  -y
+sudo yum install python-pip -y
 
 pip install awscli --upgrade --user
 
