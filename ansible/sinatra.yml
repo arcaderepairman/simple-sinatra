@@ -1,0 +1,7 @@
+---
+- name: Provision server to run sinatra demo application on docker
+  hosts: all
+
+  roles:
+    - git
+    - nginx

@@ -1,0 +1,40 @@
+---
+  - name: installs nginx web server
+    yum:
+      name: nginx
+      state: latest
+
+  - name: create web group
+    group:
+      name: web
+      state: present
+
+  - name: ensure that nginx user is locked down
+    user:
+      name: nginx
+      shell: /sbin/nologin
+      comment: "Nginx web server"
+      uid: 995
+      group: nginx
+      groups: web
+
+  - name: Changes permissions to web folder
+    file:
+      path: /var/www
+      owner: nobody
+      group: nobody
+      mode: 0755
+      recurse: yes
+
+  - name: Setup NGINX config
+    template:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      owner: nobody
+      group: nobody
+      mode: 0444
+    notify: reload nginx
+
+#  - name: Copy nginx configuration for sinatra
+#      template: src=nginx.conf dest=/etc/nginx/nginx.conf
+#      notify: restart nginx

@@ -1,0 +1,11 @@
+---
+  - name: installs git
+    yum:
+      name: git
+      state: latest
+
+  - name: clones git repo
+    git:
+      repo: https://github.com/rea-cruitment/simple-sinatra-app.git
+      dest: /var/www/html/sinatra
+      force: yes
