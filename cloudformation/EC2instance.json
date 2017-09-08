@@ -183,7 +183,7 @@
                           { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
         "UserData" : { "Fn::Base64" : {"Fn::Join" : ["", [
             "#!/bin/bash -xe\n",
-            "yum install -y git ansible centos-release-scl\n",
+            "yum install -y ansible centos-release-scl\n",
             "# enable centos repo for ruby\n",
             "/usr/bin/yum-config-manager --enable rhel-server-rhscl-7-rpms\n",
             "yum install install rh-ruby22 -y\n",
