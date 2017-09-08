@@ -174,12 +174,21 @@
   "Resources" : {
     "EC2Instance" : {
       "Type" : "AWS::EC2::Instance",
+
       "Properties" : {
         "InstanceType" : { "Ref" : "InstanceType" },
         "SecurityGroups" : [ { "Ref" : "InstanceSecurityGroup" } ],
         "KeyName" : { "Ref" : "KeyName" },
         "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
-                          { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] }
+                          { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+        "UserData" : { "Fn::Base64" : {"Fn::Join" : ["", [
+            "#!/bin/bash -xe\n",
+            "yum install -y git ansible centos-release-scl\n",
+            "# enable centos repo for ruby\n",
+            "/usr/bin/yum-config-manager --enable rhel-server-rhscl-7-rpms\n",
+            "yum install install rh-ruby22 -y\n",
+            "echo done >> /var/tmp/done\n"
+          ]]} }
       }
     },
 
