@@ -5,3 +5,5 @@
   roles:
     - git
     - nginx
+    - ruby
+    - sinatra
