@@ -1,11 +1,11 @@
 [Unit]
-Description=sinatra
+Description= sinatra rack service
 After=network.target
 
 [Service]
 Type=simple
-User=nginx
-WorkingDirectory=/var/www/sinatra
+User={{ sinatra_user }}
+WorkingDirectory={{ www_dir }}/{{ sinatra_dir }}
 ExecStart=/usr/sbin/rackup.bash
 Restart=on-abort
 

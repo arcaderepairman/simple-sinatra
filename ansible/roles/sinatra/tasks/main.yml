@@ -2,14 +2,28 @@
   - name: clones git repo
     git:
       repo: https://github.com/rea-cruitment/simple-sinatra-app.git
-      dest: /var/www/sinatra
+      dest: "{{ www_dir }}/{{ sinatra_dir }}"
       force: yes
 
   - name: installs required gems
-    command: /bin/scl enable rh-ruby22 'bundle install --binstubs=../bundle --path=../gems'
+    command: "/bin/scl enable rh-ruby22 'bundle install --binstubs=../{{ bundle_dir }} --path=../gems'"
     args:
-        chdir: /var/www/sinatra
-        creates: /var/www/bundle
+        chdir: "{{ www_dir }}/{{ sinatra_dir }}"
+        creates: "{{ www_dir }}/{{ bundle_dir }}"
+
+  - name: create sinatra group
+    group:
+      name: "{{ sinatra_user }}"
+      state: present
+
+  - name: create user for sinatra
+    user:
+      name: "{{ sinatra_user }}"
+      shell: /sbin/nologin
+      comment: "Sinatra Server"
+      group: "{{ sinatra_user }}"
+      #uid: 100000
+      groups: web
 
   - name: setup sinatra service in systemd
     template:

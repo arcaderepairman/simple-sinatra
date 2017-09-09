@@ -1,5 +1,5 @@
 #!/bin/bash
-#comment
-cd /var/www/sinatra
+# start up script for sinatra rackup
+cd {{ www_dir }}/{{ sinatra_dir }}
 
-/bin/scl enable rh-ruby22 '../bundle/rackup --host 0.0.0.0 -p 9292'
+/bin/scl enable rh-ruby22 '../{{ bundle_dir }}/rackup --host {{ rack_bind }} -p {{ rack_port }}'
