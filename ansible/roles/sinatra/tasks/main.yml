@@ -1,0 +1,35 @@
+---
+  - name: clones git repo
+    git:
+      repo: https://github.com/rea-cruitment/simple-sinatra-app.git
+      dest: /var/www/sinatra
+      force: yes
+
+  - name: installs required gems
+    command: /bin/scl enable rh-ruby22 'bundle install --binstubs=../bundle --path=../gems'
+    args:
+        chdir: /var/www/sinatra
+        creates: /var/www/bundle
+
+  - name: setup sinatra service in systemd
+    template:
+      src: sinatra.service
+      dest: /usr/lib/systemd/system/sinatra.service
+      owner: root
+      group: root
+      mode: 0644
+    notify: daemon-reload
+
+  - name: setup rackup startup script
+    template:
+      src: rackup.bash
+      dest: /usr/sbin/rackup.bash
+      owner: root
+      group: root
+      mode: 0755
+    notify: restart sinatra.service
+
+  - name: enable sinatra service
+    systemd:
+      name: sinatra.service
+      enabled: yes

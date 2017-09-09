@@ -1,5 +1,5 @@
 ---
-- name: Provision server to run sinatra demo application on docker
+- name: Provision server to run sinatra
   hosts: all
 
   roles:

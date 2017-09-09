@@ -1,4 +1,10 @@
 ---
+  # should put a condition around this for centos only
+  - name: installs epel repo so we can add NGINX
+    yum:
+      name: epel-release
+      state: latest
+
   - name: installs nginx web server
     yum:
       name: nginx
@@ -35,6 +41,25 @@
       mode: 0444
     notify: reload nginx
 
-#  - name: Copy nginx configuration for sinatra
-#      template: src=nginx.conf dest=/etc/nginx/nginx.conf
-#      notify: restart nginx
+  - name: Copy Selinux Template .te
+    template:
+      src: mysemanage.te
+      dest: /root/mysemanage.te
+      owner: root
+      group: root
+      mode: 0400
+
+  - name: update selinux poilicy to allow nginx to proxy to localhost:9292 for sinatra base on above .te file
+    shell: |
+      checkmodule -M -m -o mysemanage.mod mysemanage.te
+      semodule_package -o mysemanage.pp -m mysemanage.mod
+      semodule -i /root/mysemanage.pp
+      EXCODE=$?
+      if [ "${EXCODE}" = "0" ]; then
+        echo ${EXCODE} > /root/selinux.done
+      fi
+      exit ${EXCODE}
+    args:
+        chdir: /root
+        executable: /bin/bash
+        creates: /root/selinux.done

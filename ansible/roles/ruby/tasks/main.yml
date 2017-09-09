@@ -1,0 +1,6 @@
+---
+  - name: installs ruby and bundler (from rh repos for centos)
+    yum: name={{ item }} state=latest
+    with_items:
+      - rh-ruby22
+      - rh-ruby22-rubygem-bundler

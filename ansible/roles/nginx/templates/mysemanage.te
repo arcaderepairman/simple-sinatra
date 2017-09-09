@@ -1,0 +1,13 @@
+
+module mysemanage 1.0;
+
+require {
+	type httpd_t;
+	type glance_port_t;
+	class tcp_socket name_connect;
+}
+
+#============= httpd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t glance_port_t:tcp_socket name_connect;
