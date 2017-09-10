@@ -1,0 +1,28 @@
+---
+- name: install firewalld
+  yum:
+    name: firewalld
+
+
+
+- name: add firewall rules
+  firewalld:
+    service: "{{ item.service }}"
+    permanent: "{{ item.permanent }}"
+    state: enabled
+  with_items:
+    - { service: 'ssh', permanent: true }
+    - { service: 'http', permanent: true }
+
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    enabled: yes
+    state: reloaded
+
+#
+# - name: add ssh rule
+#   firewalld:
+#     service: ssh
+#     permanent: true
+#     state: enabled

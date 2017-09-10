@@ -1,16 +1,16 @@
 ---
   # should put a condition around this for centos only
-  - name: installs epel repo so we can add NGINX
+  - name: Installs epel repo so we can add NGINX
     yum:
       name: epel-release
       state: latest
 
-  - name: installs nginx web server
+  - name: Installs nginx web server
     yum:
       name: nginx
       state: latest
 
-  - name: ensure that nginx user is locked down
+  - name: Ensure that nginx user is locked down
     user:
       name: nginx
       shell: /sbin/nologin
@@ -44,7 +44,7 @@
       group: root
       mode: 0400
 
-  - name: update selinux poilicy to allow nginx to proxy to localhost:9292 for sinatra base on above .te file
+  - name: Update selinux poilicy to allow nginx to proxy to localhost:9292 for sinatra based on above .te file
     shell: |
       checkmodule -M -m -o mysemanage.mod mysemanage.te
       semodule_package -o mysemanage.pp -m mysemanage.mod
