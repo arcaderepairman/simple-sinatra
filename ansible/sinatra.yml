@@ -3,6 +3,7 @@
   hosts: all
 
   roles:
+    - security
     - git
     - nginx
     - ruby

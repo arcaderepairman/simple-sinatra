@@ -16,12 +16,15 @@ build_infra:
 	@echo "Your Test URL is :"
 	@aws cloudformation describe-stacks --stack-name myteststack | jq '.Stacks[] .Outputs[3] .OutputValue' -r
 	@echo "${STACK_NAME} Created!"
-	@cat ./ansible/hosts
 
 deploy_config:
 	@echo "Deploying infra code..."
 	@aws cloudformation describe-stacks --stack-name myteststack | jq '.Stacks[] .Outputs[1] .OutputValue' -r > ./ansible/hosts
-	export ANSIBLE_HOST_KEY_CHECKING=FALSE && cd ./ansible && ansible-playbook -u centos --private-key ~/rea_access_key.pem --sudo -i ./hosts  sinatra.yml
+	export ANSIBLE_HOST_KEY_CHECKING=FALSE && cd ./ansible && ansible-playbook -u centos --private-key ~/rea_access_key.pem --sudo -i ./hosts --module-path=./library sinatra.yml
+
+deploy_config_local:
+	@echo "Deploying infra code local..."
+	export ANSIBLE_HOST_KEY_CHECKING=FALSE && cd ./ansible && ansible-playbook -i "localhost," -C local --module-path=./library sinatra.yml
 
 update_infra:
 	aws cloudformation update-stack --stack-name ${STACK_NAME} --template-body file://./${CF_TEMPLATE} --parameters ParameterKey=KeyName,ParameterValue=${AWS_SERVER_SSH_KEY} ParameterKey=SSHLocation,ParameterValue=${SSHLocation} ParameterKey=HTTPLocation,ParameterValue=${HTTPLocation}
@@ -46,6 +49,10 @@ awscli_centos_install:
 
 get_hosts:
 	aws cloudformation describe-stacks --stack-name myteststack | jq '.Stacks[] .Outputs[1] .OutputValue' -r > ./ansible/hosts
+
+validate_cf:
+	#aws cloudformation validate-template --template-body file://./${CF_TEMPLATE} --parameters ParameterKey=KeyName,ParameterValue=${AWS_SERVER_SSH_KEY} ParameterKey=SSHLocation,ParameterValue=${SSHLocation} ParameterKey=HTTPLocation,ParameterValue=${HTTPLocation}
+	aws cloudformation validate-template --template-body file://./${CF_TEMPLATE}
 
 help:
 	@echo build_infra

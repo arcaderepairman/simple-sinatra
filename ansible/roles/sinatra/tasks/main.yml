@@ -14,6 +14,7 @@
   - name: create sinatra group
     group:
       name: "{{ sinatra_user }}"
+      gid: 100000
       state: present
 
   - name: create user for sinatra
@@ -22,8 +23,8 @@
       shell: /sbin/nologin
       comment: "Sinatra Server"
       group: "{{ sinatra_user }}"
-      #uid: 100000
-      groups: web
+      uid: 100000
+      # groups: web
 
   - name: setup sinatra service in systemd
     template:

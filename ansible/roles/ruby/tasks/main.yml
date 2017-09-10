@@ -1,4 +1,22 @@
 ---
+  - name: installs centos-release-scl for rh-ruby22
+    yum:
+      name: centos-release-scl
+      state: latest
+
+  - name: enable the centos-release-scl repo
+    shell: |
+      /usr/bin/yum-config-manager --enable rhel-server-rhscl-7-rpms\n
+      EXCODE=$?
+      if [ "${EXCODE}" = "0" ]; then
+        echo ${EXCODE} > /var/tmp/centos-release-scl.done
+      fi
+      exit ${EXCODE}
+    args:
+        chdir: /var/tmp
+        executable: /bin/bash
+        creates: /var/tmp/centos-release-scl.done
+
   - name: installs ruby and bundler (from rh repos for centos)
     yum: name={{ item }} state=latest
     with_items:

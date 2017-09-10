@@ -10,11 +10,6 @@
       name: nginx
       state: latest
 
-  - name: create web group
-    group:
-      name: web
-      state: present
-
   - name: ensure that nginx user is locked down
     user:
       name: nginx
@@ -22,13 +17,13 @@
       comment: "Nginx web server"
       uid: 995
       group: nginx
-      groups: web
+      # groups: web
 
   - name: Changes permissions to web folder
     file:
       path: /var/www
-      owner: nobody
-      group: nobody
+      owner: root
+      group: root
       mode: 0755
       recurse: yes
 
@@ -36,8 +31,8 @@
     template:
       src: nginx.conf
       dest: /etc/nginx/nginx.conf
-      owner: nobody
-      group: nobody
+      owner: root
+      group: root
       mode: 0444
     notify: reload nginx
 
