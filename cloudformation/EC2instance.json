@@ -28,7 +28,7 @@
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
    },
    "HTTPLocation" : {
-     "Description" : "The IP address range that can be used to SSH to the EC2 instances",
+     "Description" : "The IP address range that can be used to HTTP to the EC2 instances",
      "Type": "String",
      "MinLength": "9",
      "MaxLength": "18",
@@ -189,7 +189,11 @@
                           { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
         "UserData" : { "Fn::Base64" : {"Fn::Join" : ["", [
             "#!/bin/bash -xe\n",
-            "yum install -y ansible\n",
+            "yum install -y epel-release >> /var/tmp/userdata.log 2>&1\n",
+            "yum install -y ansible wget >> /var/tmp/userdata.log 2>&1\n",
+            "cd /root && wget https://s3-ap-southeast-2.amazonaws.com/fab-sinatra-anisble/ansible/ansible.tar >> /var/tmp/userdata.log 2>&1\n",
+            "cd /root && tar -xvf ansible.tar >> /var/tmp/userdata.log 2>&1\n",
+            "cd /root/ansible && ansible-playbook -i \"localhost,\" -c local  sinatra.yml >> /var/tmp/userdata.log 2>&1\n "
           ]]} }
       }
     },

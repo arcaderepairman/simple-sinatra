@@ -2,4 +2,4 @@
 - name: daemon-reload
   systemd: name=cfn-hup.service state=reloaded enabled=yes daemon_reload=yes
 - name: restart cfn-hup.service
-  service: name=cfn-init.service state=restarted enabled=yes
+  service: name=cfn-hup.service state=restarted enabled=yes
