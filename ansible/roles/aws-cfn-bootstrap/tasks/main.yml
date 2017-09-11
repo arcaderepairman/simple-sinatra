@@ -1,0 +1,14 @@
+---
+  - name: install cfn-init from http location
+    command: "/usr/bin/easy_install --script-dir {{ cfn_http_location }}"
+    args:
+        creates: "/usr/bin/cfn-init"
+
+  - name: setup cfn-hup service in systemd
+    template:
+      src: cfn-hup.service
+      dest: /usr/lib/systemd/system/cfn-hup.service
+      owner: root
+      group: root
+      mode: 0644
+    notify: daemon-reload

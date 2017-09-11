@@ -36,6 +36,12 @@
       mode: 0444
     notify: reload nginx
 
+  - name: make sure nginx is enabled and started
+    service:
+      name: nginx
+      enabled: yes
+      state: started
+
   - name: Copy Selinux Template .te
     template:
       src: mysemanage.te

@@ -3,8 +3,6 @@
   yum:
     name: firewalld
 
-
-
 - name: add firewall rules
   firewalld:
     service: "{{ item.service }}"
@@ -19,10 +17,3 @@
     name: firewalld
     enabled: yes
     state: reloaded
-
-#
-# - name: add ssh rule
-#   firewalld:
-#     service: ssh
-#     permanent: true
-#     state: enabled

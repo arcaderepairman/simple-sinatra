@@ -4,6 +4,7 @@
 
   roles:
     - security
+    - aws-cfn-bootstrap
     - git
     - nginx
     - ruby
