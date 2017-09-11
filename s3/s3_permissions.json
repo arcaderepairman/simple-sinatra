@@ -8,8 +8,7 @@
                 "AWS": "*"
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::fab-sinatra-anisble/ansible*"
+            "Resource": "arn:aws:s3:::simple-sinatra/*"
         }
     ]
-
 }

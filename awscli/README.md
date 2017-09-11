@@ -1,2 +1,2 @@
-This installs the AWS cli
-put your aws keys in here.. but make sure .gitignore is set to ingnore them
+Just a small script to setup the AWS Cli as required by make to run all the infra build in AWS
+jq is also required by the make scirpts.

@@ -1,6 +1,9 @@
-SSHLocation="120.148.10.232/32"
-HTTPLocation="120.148.10.232/32"
+# SSHLocation="120.148.10.232/32"
+# HTTPLocation="120.148.10.232/32"
+SSHLocation=0.0.0.0/0
+HTTPLocation=0.0.0.0/0
 AWS_SERVER_SSH_KEY=rea_access_key
+AWS_SERVER_SSH_KEY_FILE=~/${AWS_SERVER_SSH_KEY}.pem
 CF_TEST_TEMPLATE=./cloudformation/EC2instance.json
 CF_TEMPLATE=./cloudformation/ELBWithLockedDownAutoScaledInstances.json
 STACK_NAME=prodsinatrastack
@@ -58,13 +61,13 @@ validate_cf:
 deploy_test_config:
 	@echo "Deploying infra code to ${TEST_STACK_NAME}"
 	@aws cloudformation describe-stacks --stack-name ${TEST_STACK_NAME} | jq '.Stacks[] .Outputs[3] .OutputValue' -r > ./ansible/hosts
-	@tar czf - ./ansible | ssh -o "StrictHostKeyChecking no" -i ~/${AWS_SERVER_SSH_KEY}.pem ${ansible_user}@`cat ./ansible/hosts` "tar xvzf -"
-	ssh -o "StrictHostKeyChecking no" -tt -i ~/${AWS_SERVER_SSH_KEY}.pem ${ansible_user}@`cat ./ansible/hosts` "cd ansible && sudo ansible-playbook -i "localhost," -c local  sinatra.yml"
+	@tar czf - ./ansible | ssh -o "StrictHostKeyChecking no" -i ${AWS_SERVER_SSH_KEY_FILE} ${ansible_user}@`cat ./ansible/hosts` "tar xvzf -"
+	ssh -o "StrictHostKeyChecking no" -tt -i ${AWS_SERVER_SSH_KEY_FILE} ${ansible_user}@`cat ./ansible/hosts` "cd ansible && sudo ansible-playbook -i "localhost," -c local  sinatra.yml"
 	@echo "Infra code deployed to ${TEST_STACK_NAME}"
 
 deploy_config_local:
 	@echo "Deploying infra code local..."
-	export ANSIBLE_HOST_KEY_CHECKING=FALSE && cd ./ansible && ansible-playbook -i "localhost," -C local --module-path=./library sinatra.yml
+	export ANSIBLE_HOST_KEY_CHECKING=FALSE && cd ./ansible && ansible-playbook -i "localhost," -C local sinatra.yml
 
 cp_s3:
 	@echo "Uploading Ansible tar to S3 bucket ${S3_bucket}"

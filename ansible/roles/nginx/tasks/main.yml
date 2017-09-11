@@ -1,5 +1,4 @@
 ---
-  # should put a condition around this for centos only
   - name: Installs epel repo so we can add NGINX
     yum:
       name: epel-release

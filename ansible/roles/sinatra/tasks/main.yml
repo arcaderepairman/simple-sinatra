@@ -24,7 +24,6 @@
       comment: "Sinatra Server"
       group: "{{ sinatra_user }}"
       uid: 100000
-      # groups: web
 
   - name: setup sinatra service in systemd
     template:
