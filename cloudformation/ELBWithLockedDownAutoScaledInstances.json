@@ -288,7 +288,7 @@
           "#!/bin/bash -xe\n",
           "yum install -y epel-release >> /var/tmp/userdata.log 2>&1\n",
           "yum install -y ansible wget >> /var/tmp/userdata.log 2>&1\n",
-          "cd /root && wget https://s3-ap-southeast-2.amazonaws.com/fab-sinatra-anisble/ansible/ansible.tar >> /var/tmp/userdata.log 2>&1\n",
+          "cd /root && wget https://s3-ap-southeast-2.amazonaws.com/simple-sinatra/ansible.tar >> /var/tmp/userdata.log 2>&1\n",
           "cd /root && tar -xvf ansible.tar >> /var/tmp/userdata.log 2>&1\n",
           "cd /root/ansible && ansible-playbook -i \"localhost,\" -c local  sinatra.yml >> /var/tmp/userdata.log 2>&1\n",
           "/opt/aws/bin/cfn-init -v ",

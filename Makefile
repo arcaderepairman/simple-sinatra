@@ -9,9 +9,7 @@ Subnets_2a=subnet-615c4e17
 Subnets_2b=subnet-821bf9e5
 VpcId=vpc-41d78e25
 ansible_user=centos
-S3_folder=ansible
-S3_bucket=fab-sinatra-anisble
-S3_URL=https://s3-ap-southeast-2.amazonaws.com
+S3_bucket=s3://simple-sinatra
 
 
 all:	help
@@ -23,6 +21,7 @@ build_test_infra:
 	@echo "Waiting... this may take a while"
 	@aws cloudformation wait stack-create-complete --stack-name ${TEST_STACK_NAME}
 	@echo "${TEST_STACK_NAME} Created!"
+	@echo "Your Test URL is :"
 	@aws cloudformation describe-stacks --stack-name ${TEST_STACK_NAME} | jq '.Stacks[] .Outputs[3] .OutputValue' -r
 
 delete_test_infra:
@@ -56,11 +55,12 @@ validate_cf:
 	@echo Validating cloudformation json : ${STACK_NAME}
 	aws cloudformation validate-template --template-body file://./${CF_TEMPLATE}
 
-deploy_config:
+deploy_test_config:
 	@echo "Deploying infra code to ${TEST_STACK_NAME}"
-	@aws cloudformation describe-stacks --stack-name ${TEST_STACK_NAME} | jq '.Stacks[] .Outputs[1] .OutputValue' -r > ./ansible/hosts
+	@aws cloudformation describe-stacks --stack-name ${TEST_STACK_NAME} | jq '.Stacks[] .Outputs[3] .OutputValue' -r > ./ansible/hosts
 	@tar czf - ./ansible | ssh -o "StrictHostKeyChecking no" -i ~/${AWS_SERVER_SSH_KEY}.pem ${ansible_user}@`cat ./ansible/hosts` "tar xvzf -"
 	ssh -o "StrictHostKeyChecking no" -tt -i ~/${AWS_SERVER_SSH_KEY}.pem ${ansible_user}@`cat ./ansible/hosts` "cd ansible && sudo ansible-playbook -i "localhost," -c local  sinatra.yml"
+	@echo "Infra code deployed to ${TEST_STACK_NAME}"
 
 deploy_config_local:
 	@echo "Deploying infra code local..."
@@ -70,7 +70,7 @@ cp_s3:
 	@echo "Uploading Ansible tar to S3 bucket ${S3_bucket}"
 	@echo copying ansible code to s3 bucket ${S3}
 	@tar -cvf ./ansible.tar ./ansible
-	aws s3 cp ./ansible.tar ${S3_URL}/${S3_bucket}/${S3_folder}
+	aws s3 cp ./ansible.tar ${S3_bucket}/ansible.tar
 
 
 configure_awscli:
@@ -86,6 +86,6 @@ help:
 	@echo build_infra
 	@echo delete_infra
 	@echo validate_cf
-	@echo deploy_config
+	@echo deploy_test_config
 	@echo deploy_config_local
 	@echo help
