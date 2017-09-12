@@ -126,19 +126,19 @@ Basic design :
 
   These variable are located at the top of the make file and can be modified to suit your environment.
 
-  SSHLocation               # IP range that allows ssh to the sinatra servers set this to your internet getaway
-  HTTPLocation              # same as above but for http, but only for the test stack
-  AWS_SERVER_SSH_KEY        # default filename for the server ssh key
-  AWS_SERVER_SSH_KEY_FILE   # default filename location the server ssh key ~
-  CF_TEST_TEMPLATE          # test Cloudformation template
-  CF_TEMPLATE               # production cloudformation template
-  STACK_NAME                # prod stack name
-  TEST_STACK_NAME           # test stack name
-  Subnets_2a                # predified subnets in the aws account
-  Subnets_2b                # predified subnets in the aws account
-  VpcId                     # predified Vpc in the aws account
-  ansible_user              # the CentOS default user, use by ansible
-  S3_bucket=a               # s3 bucket location where we deploy the ansible code too for production.
+      SSHLocation               # IP range that allows ssh to the sinatra servers set this to your internet getaway
+      HTTPLocation              # same as above but for http, but only for the test stack
+      AWS_SERVER_SSH_KEY        # default filename for the server ssh key
+      AWS_SERVER_SSH_KEY_FILE   # default filename location the server ssh key ~
+      CF_TEST_TEMPLATE          # test Cloudformation template
+      CF_TEMPLATE               # production cloudformation template
+      STACK_NAME                # prod stack name
+      TEST_STACK_NAME           # test stack name
+      Subnets_2a                # predified subnets in the aws account
+      Subnets_2b                # predified subnets in the aws account
+      VpcId                     # predified Vpc in the aws account
+      ansible_user              # the CentOS default user, use by ansible
+      S3_bucket=a               # s3 bucket location where we deploy the ansible code too for production.
 
 
   For our example the AWS Vpc and subnets have already been defined and defaulted above no need to change them for the
