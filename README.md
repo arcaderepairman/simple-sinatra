@@ -75,12 +75,18 @@ Design considerations :
    - Connection to the internet
 
    - These Packages installed:.
-      make, jq, python, pypthon-pip, awscli, ansible (for local tests), ssh, bash
+      git make, jq, python, pypthon-pip, awscli, ansible (for local tests), ssh, bash
 
+      if your running CentOS (which I am) you need the epel-release repo too.
+
+      This should get you going :
+      #> yum install epel-release
+      #> yum install make jq python pypthon-pip awscli ansible ssh bash git
 
   Getting Set Up
   ================
-  Install and configure the awscli:  (for details on installing the awscli, look in the awscli folder)
+  Install and configure the awscli:  
+  for details on installing the awscli via pip, look in the awscli folder but you can use the rpm too
   ---------------------------------
 
   Configure the AWS cli with the provided access keys.

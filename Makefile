@@ -1,5 +1,5 @@
 #IP location locked down to local VPN network by default to access host exernally you need change these.
-SSHLocation=120.148.10.232/32
+SSHLocation=172.31.0.0/16
 HTTPLocation=172.31.0.0/16
 AWS_SERVER_SSH_KEY=rea_access_key
 AWS_SERVER_SSH_KEY_FILE=~/${AWS_SERVER_SSH_KEY}.pem
@@ -100,6 +100,6 @@ help:
 	@echo "validate_cf:           Validate the production stack cloudformation json"
 	@echo "deploy_test_config:    Deploy the test ansible code to the test stack ${TEST_STACK_NAME}"
 	@echo "deploy_config_local:   Run the ansible code on the local host"
-	@echo "cp_s3:									Upload Anisble tarball to S3"
+	@echo "cp_s3:	               Upload Anisble tarball to S3"
 	@echo "help:                  Print this menu to the screen"
 	@echo
