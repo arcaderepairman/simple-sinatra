@@ -29,8 +29,12 @@ Basic design :
                 Inst1  Inst2  <-- internal IPs
 
 
-    The design practical was very simple, a quick way to deploy the sinatra app to the internet, since the app itself was quiet basic there weren't too many dependencies.
+    The design practical was very simple, a quick way to deploy the sinatra app to the internet, since the app itself was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated is the attached diagram would be sufficient.
+    I tier design with a loadbalancer in front  This represents a classic DMZ design.  However if there were DBs in the picture the result would have been quiet different, involving at least another network layer below this one, for the DBs to be hosted in.
 
+    The Autoscalling group is enough to scale the application (by default build on t2.small hosts) and since there is no state, a simple round robin policy ( the default ) is fine, again if state or connection persistency was an issue the deisgn would have involved a different LB configuration.
+
+    This hosts themselves are running firewalld to limit their exposure 
 
   Let's get started.
   =================
