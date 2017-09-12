@@ -47,20 +47,22 @@ Design considerations :
     So how does the app get on the server ? ...  The Ansible infrastructure code has a sinatra role that runs a
     git clone from the simple-sinatra-app repo.  
 
-    How does the Ansible code get on the server ?... The Ansbile code is transferred as a tarball to an S3 bucket once
-    testing is complete. The production hosts will pull the tarball down and execute it upon deployment.  This runs on
-    first boot (when the cloudformation template is deployed) and is kicked off by a small script in the userdata.  
-    I tired to keep this script as small as possible and have kept most of the infrastructure code within Ansible.
+    How does the Ansible code get on the server ?... The Ansbile code is transferred as a tarball to an S3 bucket
+    once testing is complete. The production hosts will pull the tarball down and execute it upon deployment.  This
+    runs on first boot (when the cloudformation template is deployed) and is kicked off by a small script in the
+    userdata.  I tired to keep this script as small as possible and have kept most of the infrastructure code within
+    Ansible.
 
-    I don't have a pipe line for the the testing past, but the make files could be used for such a purpose. Also there are
-    no server spec test. But I believe they could be applied to this model.  Also e2e tests could be part of that pipeline
-    via the test stack.
+    I don't have a pipe line for the the testing past, but the make files could be used for such a purpose. Also
+    there are no server spec test. But I believe they could be applied to this model.  Also e2e tests could be part
+    of that pipeline via the test stack.
 
-    Code updates can be applied directly to the hosts after deployment, via the Ansible code, but I would recommend instance
-    rebuilds over this.
+    Code updates can be applied directly to the hosts after deployment, via the Ansible code, but I would recommend
+    instance rebuilds over this.
 
-    That about sums it up, there is more information about the inner working within the steps below that will give you more
-    context on how it works.
+    That about sums it up, there is more information about the inner working within the steps below that will give
+    you more context on how it works.
+
 
   Let's get started.
   =================
@@ -69,10 +71,11 @@ Design considerations :
 
   Deployment can happen from any Linux hosting or equivalent (CentOS is preferred) provided you have the following
   prerequisites:
+
    - Connection to the internet
 
-   - These Packages:.
-      Make, jq, python, pypthon-pip, awscli, ansible (for local tests), SSH, bash
+   - These Packages installed:.
+      make, jq, python, pypthon-pip, awscli, ansible (for local tests), ssh, bash
 
 
   Getting Set Up
@@ -92,8 +95,8 @@ Design considerations :
   Setup your server access key (filename : rea_access_key.pem contained in the submission email)
   ----------------------------
 
-  To access the AWS hosts you will need a copy of the server access key.  The default location for this is in your
-  homedir.( ~ )  
+  To access the AWS hosts you will need a copy of the server access key.
+  The default location for this is in your homedir ( ~/ )  
   You can modify the default path via editing AWS_SERVER_SSH_KEY_FILE variable directly within the make file.
 
 
@@ -101,24 +104,24 @@ Design considerations :
   --------------
   Assuming you have install the above, just clone this repo to get started
 
-  Git clone http....
+    #> git clone https://github.com/arcaderepairman/simple-sinatra.git
 
-  All builds are executed via make.
+  All builds/process are executed via make, I find it a simple way to bundle together a bunch of things that need to be done.
 
   Run make to see help on the available options.
 
 
-  #> make
+    #> make
 
-  build_test_infra:      Using cloud formation build test infrastructure stack testsinatrastack
-  delete_test_infra:     Delete the test stack testsinatrastack
-  validate_test_cf:      Validate the test stack cloudformation json
-  build_infra:           Using cloud formation build production infrastructure stack prodsinatrastack
-  delete_infra:          Delete the production stack prodsinatrastack
-  validate_cf:           Validate the production stack cloudformation json
-  deploy_test_config:    Deploy the test ansible code to the test stack testsinatrastack
-  deploy_config_local:   Run the ansible code on the local host
-  help:                  Print this menu to the screen
+    build_test_infra:      Using cloud formation build test infrastructure stack testsinatrastack
+    delete_test_infra:     Delete the test stack testsinatrastack
+    validate_test_cf:      Validate the test stack cloudformation json
+    build_infra:           Using cloud formation build production infrastructure stack prodsinatrastack
+    delete_infra:          Delete the production stack prodsinatrastack
+    validate_cf:           Validate the production stack cloudformation json
+    deploy_test_config:    Deploy the test ansible code to the test stack testsinatrastack
+    deploy_config_local:   Run the ansible code on the local host
+    help:                  Print this menu to the screen
 
 
   Understanding the defaults
@@ -130,14 +133,14 @@ Design considerations :
       HTTPLocation              # same as above but for http, but only for the test stack
       AWS_SERVER_SSH_KEY        # default filename for the server ssh key
       AWS_SERVER_SSH_KEY_FILE   # default filename location the server ssh key ~
-      CF_TEST_TEMPLATE          # test Cloudformation template
-      CF_TEMPLATE               # production cloudformation template
-      STACK_NAME                # prod stack name
+      CF_TEST_TEMPLATE          # test Cloudformation template filename
+      CF_TEMPLATE               # production cloudformation template filename
+      STACK_NAME                # production stack name
       TEST_STACK_NAME           # test stack name
-      Subnets_2a                # predified subnets in the aws account
-      Subnets_2b                # predified subnets in the aws account
-      VpcId                     # predified Vpc in the aws account
-      ansible_user              # the CentOS default user, use by ansible
+      Subnets_2a                # predefined subnets in the aws account
+      Subnets_2b                # predefined subnets in the aws account
+      VpcId                     # predefined Vpc in the aws account
+      ansible_user              # the CentOS default user, used by ansible
       S3_bucket=a               # s3 bucket location where we deploy the ansible code too for production.
 
 
@@ -148,8 +151,9 @@ Design considerations :
   Let's start building!
   ---------------------
 
-  Okay now for the fun stuff: First let's build our test stacks to test the Ansible infra code.
+  Okay now for the fun stuff: First let's build our test stack to test the Ansible infrastructure code.
 
+    #> cd <repo directory>
     #> make build_test_infra
     Building testsinatrastack infrastructure...
     .....
@@ -158,10 +162,10 @@ Design considerations :
     Your Test URL is :
     ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com
 
-    Assuming you have set both HTTPLocation and SSHLocation to your network location you can use the url above to access
-    the server.  There wont be anything on the http endpoint until you deploy the Ansible code so the url wont work in a
-    browser.  However you can use to access the machine via ssh using the supplied pem key, but its just a plain CentOS
-    image at the moment.
+    Assuming you have set both HTTPLocation and SSHLocation to your network gateway (internet IP) you can use the url
+    above to access the server via ssh.  There wont be anything on the http endpoint until you deploy the Ansible code
+    so the url wont work in a browser.  However you can use to access the machine via ssh using the supplied pem key,
+    but its just a plain CentOS image at the moment.
 
       To ssh in : #> ssh -i ~/rea_access_key.pem centos@ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com
 
@@ -176,11 +180,12 @@ Design considerations :
     ------------------------------------------------------------
     What's happening here :
     This will tar up the Ansible source code and upload it to the test Sinatra server in the stack you just built and
-    execute it.  Check the results... browse to http://ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com If all
-    is okay you can upload the code to the S3 bucket for production deployments.  ^thats not the real url
+    execute it.  Check the results... browse to your url
+    (in this case http://ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com ) If all is okay you can upload the
+    code to the S3 bucket for production deployments.
 
     NOTE: I copy the code to the host rather than using the Ansible locally to push the code, because I was experiencing
-    some intermit internet issues and it seem to apply very slowly over the remote connection.
+    some intermit internet issues causing very slow ansible runs.
     If your having trouble connection check the value of SSHLocation in the make file.
     -----------------------------------------------------------
 
@@ -209,8 +214,8 @@ Design considerations :
   Browsing to that url should show you the "hello world" sinatra page... if not something has gone wrong
   or maybe your just too quick, the stack takes about 6.5 mins to come up.
   Have a look around the console, if you have enable ssh access via the SSHLocation variable you should be
-  able to jump on the hosts to have a look at the server configuration... should be exactly the same as
-  test.... you'll need to fish the external IPs for the servers out of the aws console.
+  able to jump on the hosts to have a look at the servers... they should be exactly the same as
+  test.... you'll need to fish the external IPs for the servers out of the AWS console.
 
   So what just happened ?
   -----------------------
@@ -218,7 +223,7 @@ Design considerations :
     The cloudformation template provisioned an ELB pointing to an autoscalling server group.  The autoscalling
     group spins up at least 2 servers in the stack for HA locked down by a security group.
     I put as little as possible into the cloudformation template as far as operating system configuration,
-    there is a small script in the user data section that basically :
+    there is a small script in the user data section that does the following :
 
       - installs ansible
       - pulls the ansible code from the S3 bucket
@@ -226,7 +231,6 @@ Design considerations :
       - run cfn-init to complete the setup of the load balancing group
 
     For more details on what the ansible code does, check out the README.md in the ansbile folder.
-
 
   Okay time to clean up, these commands will decommission the cloudformation stacks we provisioned earlier :
 

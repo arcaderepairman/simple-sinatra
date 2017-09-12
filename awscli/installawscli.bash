@@ -2,10 +2,10 @@
 
 # install aws CLI in current users home dir.. ~/.local
 # to run make sure you have sudo access, but don't run as root.
-# jq is required to parse aws json 
+# jq is required to parse aws json
 
-sudo yum install python epel-release jq -y
-sudo yum install python-pip -y
+sudo yum install epel-release -y
+sudo yum install python python-pip jq -y
 
 pip install awscli --upgrade --user
 
