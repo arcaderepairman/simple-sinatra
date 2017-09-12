@@ -20,21 +20,23 @@ Basic design :
     I have 1 test Cloud Formation script : cloudformation\EC2instance.json which is just single host wrapped up in a security group.
     I used that to test the infra code on.
 
-    The Cloud Formation setup for "production" uses an ELB and an auto-scaling group with some limits how many hosts it can scale too.  see attached diagram in repo:
+    The Cloud Formation setup for "production" uses an ELB and an auto-scaling group with some limits how many hosts it can scale too.  
 
 
-                    ELB   <--- external IP
-                     |
-                    / \
-                Inst1  Inst2  <-- internal IPs
-
-
-    The design practical was very simple, a quick way to deploy the sinatra app to the internet, since the app itself was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated is the attached diagram would be sufficient.
+    The design is relatively simple, and a quick way to deploy the sinatra app to the internet, since the app itself was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated would be sufficient.
     I tier design with a loadbalancer in front  This represents a classic DMZ design.  However if there were DBs in the picture the result would have been quiet different, involving at least another network layer below this one, for the DBs to be hosted in.
 
-    The Autoscalling group is enough to scale the application (by default build on t2.small hosts) and since there is no state, a simple round robin policy ( the default ) is fine, again if state or connection persistency was an issue the deisgn would have involved a different LB configuration.
+    The Autoscalling group is enough to scale the application (by default build on t2.small hosts) and since there is no state, a simple round robin policy ( the default ) is fine, again if state or connection persistency was an issue the design would have involved a different LB configuration.
 
-    This hosts themselves are running firewalld to limit their exposure 
+    The hosts themselves are running firewalld to limit their exposure, I think that more could be done here to improve security, for example running the CIS security benchmark on the server to ensure better hardening.
+
+    So how does the app get on the server ? ... The ansbile code is first tested on the test stack, once it succeeds the code can then be transferred to an S3 bucket ready for deployment on the production host.
+
+    I don't have a pipe line for the, but the make files could be used for such a purpose. Also there are no server spec test here. But I believe they could be applied to this model I have created as aswell as kicking of e2e test via the test stack.
+
+    To get the code on the the production server at deploy time, I have placed a small script within the userdata  of the instance config on the production cloudformation template, I tired to keep this script as small as possible and have most of the infrastructure code within Ansible. At provision time the hosts will pull the code from s3 and apply it to themselves.
+
+    Code updates can be applied directly to the hosts again, but I would recommend instance rebuilds over reapplying the Anisble over the top.... That about sums it up, there is more information about in the steps below that will give you more context on how it works.
 
   Let's get started.
   =================
