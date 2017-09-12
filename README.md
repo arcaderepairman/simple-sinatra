@@ -19,25 +19,23 @@ and a make file, to "make" it all run. The server builds are based on CentOS 7 A
 on any other OS.
 
 
-Basic design :
+Design considerations :
 
-    I didn't use Docker/containers as part of this submission but there would have been advantages if I did. eg:
-    Bundling up all the Ruby dependencies in a container, but I wanted to limit the tooling as much as possible..
+    I didn't use Docker/containers as part of this submission but there would have been advantages if I did.
+    eg: Bundling up all the Ruby dependencies in a container.  I wanted to limit the tooling as much as possible..
     so running sinatra on the VM seemed a leaner approach.
 
     I have 1 test Cloud Formation script : cloudformation\EC2instance.json which is just single host wrapped up in a
     security group. I used that to test the infra code on.
 
-    The Cloud Formation setup for "production" uses an ELB and an auto-scaling group with some limits how many hosts
-    it can scale too.  
+    The Cloud Formation setup for "production" uses an ELB and an auto-scaling group with some maximum and minimum limits.
 
-
-    The design is relatively simple, and a quick way to deploy the sinatra app to the internet, since the app itself
+    The design is relatively simple, and a quick way to deploy the sinatra app to the internet. Since the app itself
     was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated would be
-    sufficient.
-    I tier design with a loadbalancer in front  This represents a classic DMZ design.  However if there were DBs in
-    the picture the result would have been quiet different, involving at least another network layer below this one,
-    for the DBs to be hosted in.
+    sufficient. (see photo in the repo)
+    Its a 2 tier design with a loadbalancer in front classic kind of single DMZ design.  However if there were database
+    servers involved the result would have been quiet different, involving at least another network layer DMZ for the
+    database servers to be hosted in.
 
     The Autoscalling group is enough to scale the application (by default build on t2.small hosts) and since there is
     no state, a simple round robin policy ( the default ) is fine, again if state or connection persistency was an
@@ -46,21 +44,23 @@ Basic design :
     The hosts themselves are running firewalld to limit their exposure, I think that more could be done here to improve
     security, for example running the CIS security benchmark on the server to ensure better hardening.
 
-    So how does the app get on the server ? ... The ansbile code is first tested on the test stack, once it succeeds the
-    code can then be transferred to an S3 bucket ready for deployment on the production host.
+    So how does the app get on the server ? ...  The Ansible infrastructure code has a sinatra role that runs a
+    git clone from the simple-sinatra-app repo.  
 
-    I don't have a pipe line for the, but the make files could be used for such a purpose. Also there are no server spec
-    test here. But I believe they could be applied to this model I have created as aswell as kicking of e2e test via the
-    test stack.
+    How does the Ansible code get on the server ?... The Ansbile code is transferred as a tarball to an S3 bucket once
+    testing is complete. The production hosts will pull the tarball down and execute it upon deployment.  This runs on
+    first boot (when the cloudformation template is deployed) and is kicked off by a small script in the userdata.  
+    I tired to keep this script as small as possible and have kept most of the infrastructure code within Ansible.
 
-    To get the code on the the production server at deploy time, I have placed a small script within the userdata  of
-    the instance config on the production cloudformation template, I tired to keep this script as small as possible and
-    have most of the infrastructure code within Ansible. At provision time the hosts will pull the code from s3 and apply
-    it to themselves.
+    I don't have a pipe line for the the testing past, but the make files could be used for such a purpose. Also there are
+    no server spec test. But I believe they could be applied to this model.  Also e2e tests could be part of that pipeline
+    via the test stack.
 
-    Code updates can be applied directly to the hosts again, but I would recommend instance rebuilds over reapplying the
-     Anisble over the top.... That about sums it up, there is more information about in the steps below that will give
-     you more context on how it works.
+    Code updates can be applied directly to the hosts after deployment, via the Ansible code, but I would recommend instance
+    rebuilds over this.
+
+    That about sums it up, there is more information about the inner working within the steps below that will give you more
+    context on how it works.
 
   Let's get started.
   =================
@@ -240,10 +240,10 @@ Basic design :
 
   Delete production stack
 
-  #> make delete_infra
-  Deleting prodsinatrastack infrastructure...
-  Waiting... this may take a while
-  prodsinatrastack Deleted!
+    #> make delete_infra
+    Deleting prodsinatrastack infrastructure...
+    Waiting... this may take a while
+    prodsinatrastack Deleted!
 
 
   And that's it!
