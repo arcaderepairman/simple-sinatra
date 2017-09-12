@@ -150,13 +150,13 @@ Basic design :
 
   Okay now for the fun stuff: First let's build our test stacks to test the Ansible infra code.
 
-  #> make build_test_infra
-  Building testsinatrastack infrastructure...
-  .....
-  Waiting... this may take a while
-  testsinatrastack Created!
-  Your Test URL is :
-  ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com
+    #> make build_test_infra
+    Building testsinatrastack infrastructure...
+    .....
+    Waiting... this may take a while
+    testsinatrastack Created!
+    Your Test URL is :
+    ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com
 
     Assuming you have set both HTTPLocation and SSHLocation to your network location you can use the url above to access
     the server.  There wont be anything on the http endpoint until you deploy the Ansible code so the url wont work in a
@@ -167,11 +167,11 @@ Basic design :
 
   Let's test our Ansible code:
 
-  #> make deploy_test_config
-  Deploying infra code to testsinatrastack
-  .........
-  PLAY RECAP **************************************************************************************************
-  localhost                  : ok=28   changed=27   unreachable=0    failed=0
+    #> make deploy_test_config
+    Deploying infra code to testsinatrastack
+    .........
+    PLAY RECAP **************************************************************************************************
+    localhost                  : ok=28   changed=27   unreachable=0    failed=0
 
     ------------------------------------------------------------
     What's happening here :
@@ -186,56 +186,56 @@ Basic design :
 
   Okay let's upload the code to S3 for the production stack :
 
-  #> make cp_s3
+    #> make cp_s3
 
-  ./ansible/roles/sinatra/vars/
-  ./ansible/roles/sinatra/vars/main.yml
-  ./ansible/sinatra.yml
-  aws s3 cp ./ansible.tar s3://simple-sinatra/ansible.tar
-  upload: ./ansible.tar to s3://simple-sinatra/ansible.tar
+    ./ansible/roles/sinatra/vars/
+    ./ansible/roles/sinatra/vars/main.yml
+    ./ansible/sinatra.yml
+    aws s3 cp ./ansible.tar s3://simple-sinatra/ansible.tar
+    upload: ./ansible.tar to s3://simple-sinatra/ansible.tar
 
     ---------------------------------------------------
     You are now ready to deploy the product ion stack.
     --------------------------------------------------
 
-  #> make build_infra
-  Building prodsinatrastack infrastructure...
-  .....
-  Waiting... this may take a while
-  prodsinatrastack Created!
-  Your Test URL is :
-  http://prods-Appli-34BZII2L2DSX-594734399.ap-southeast-2.elb.amazonaws.com
+    #> make build_infra
+    Building prodsinatrastack infrastructure...
+    .....
+    Waiting... this may take a while
+    prodsinatrastack Created!
+    Your Test URL is :
+    http://prods-Appli-34BZII2L2DSX-594734399.ap-southeast-2.elb.amazonaws.com
 
-    Browsing to that url should show you the "hello world" sinatra page... if not something has gone wrong
-    or maybe your just too quick, the stack takes about 6.5 mins to come up.
-    Have a look around the console, if you have enable ssh access via the SSHLocation variable you should be
-    able to jump on the hosts to have a look at the server configuration... should be exactly the same as
-    test.... you'll need to fish the external IPs for the servers out of the aws console.
+  Browsing to that url should show you the "hello world" sinatra page... if not something has gone wrong
+  or maybe your just too quick, the stack takes about 6.5 mins to come up.
+  Have a look around the console, if you have enable ssh access via the SSHLocation variable you should be
+  able to jump on the hosts to have a look at the server configuration... should be exactly the same as
+  test.... you'll need to fish the external IPs for the servers out of the aws console.
 
-    So what just happened ?
-    -----------------------
+  So what just happened ?
+  -----------------------
 
-      The cloudformation template provisioned an ELB pointing to an autoscalling server group.  The autoscalling
-      group spins up at least 2 servers in the stack for HA locked down by a security group.
-      I put as little as possible into the cloudformation template as far as operating system configuration,
-      there is a small script in the user data section that basically :
+    The cloudformation template provisioned an ELB pointing to an autoscalling server group.  The autoscalling
+    group spins up at least 2 servers in the stack for HA locked down by a security group.
+    I put as little as possible into the cloudformation template as far as operating system configuration,
+    there is a small script in the user data section that basically :
 
-        - installs ansible
-        - pulls the ansible code from the S3 bucket
-        - runs ansible with the pulled code.
-        - run cfn-init to complete the setup of the load balancing group
+      - installs ansible
+      - pulls the ansible code from the S3 bucket
+      - runs ansible with the pulled code.
+      - run cfn-init to complete the setup of the load balancing group
 
-      For more details on what the ansible code does, check out the README.md in the ansbile folder.
+    For more details on what the ansible code does, check out the README.md in the ansbile folder.
 
 
   Okay time to clean up, these commands will decommission the cloudformation stacks we provisioned earlier :
 
   Delete test stack
 
-  #> make delete_test_infra    
-  Deleting testsinatrastack infrastructure...
-  Waiting... this may take a while
-  testsinatrastack Deleted!
+    #> make delete_test_infra    
+    Deleting testsinatrastack infrastructure...
+    Waiting... this may take a while
+    testsinatrastack Deleted!
 
 
   Delete production stack
