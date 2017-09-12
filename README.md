@@ -80,8 +80,11 @@ Design considerations :
       if your running CentOS (which I am) you need the epel-release repo too.
 
       This should get you going :
+
       #> yum install epel-release
+
       #> yum install make jq python pypthon-pip awscli ansible ssh bash git
+      
 
   Getting Set Up
   ================
