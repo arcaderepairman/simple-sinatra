@@ -16,7 +16,6 @@
       comment: "Nginx web server"
       uid: 995
       group: nginx
-      # groups: web
 
   - name: Changes permissions to web folder
     file:
