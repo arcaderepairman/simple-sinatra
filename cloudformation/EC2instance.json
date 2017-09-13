@@ -165,8 +165,8 @@
       "ap-south-1"       : {"PV64" : "NOT_SUPPORTED", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"},
       "us-east-2"        : {"PV64" : "NOT_SUPPORTED", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"},
       "ca-central-1"     : {"PV64" : "NOT_SUPPORTED", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"},
-      "sa-east-1"        : {"PV64" : "ami-1ad34676", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"},
-      "cn-north-1"       : {"PV64" : "ami-77559f1a", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"}
+      "sa-east-1"        : {"PV64" : "NOT_SUPPORTED", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"},
+      "cn-north-1"       : {"PV64" : "NOT_SUPPORTED", "HVM64" : "NOT_SUPPORTED", "HVMG2" : "NOT_SUPPORTED"}
     }
 
   },
