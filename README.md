@@ -32,7 +32,7 @@ Design considerations :
 
     The design is relatively simple, and a quick way to deploy the sinatra app to the internet. Since the app itself
     was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated would be
-    sufficient. (see photo in the repo)
+    sufficient. (see diagram folder in the repo)
     Its a 2 tier design with a loadbalancer in front classic kind of single DMZ design.  However if there were database
     servers involved the result would have been quiet different, involving at least another network layer DMZ for the
     database servers to be hosted in.
@@ -84,7 +84,7 @@ Design considerations :
       #> yum install epel-release
 
       #> yum install make jq python pypthon-pip awscli ansible ssh bash git
-      
+
 
   Getting Set Up
   ================
