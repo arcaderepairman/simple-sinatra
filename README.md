@@ -109,8 +109,9 @@ Design considerations :
   ----------------------------
 
   To access the AWS hosts you will need a copy of the server access key.
-  The default location for this is in your homedir ( ~/ )  
+  The default location for this is in your homedir ( ~/ )
   You can modify the default path via editing AWS_SERVER_SSH_KEY_FILE variable directly within the make file.
+  make the permission are set to something like 400 or ssh may issue an unprotected warning.
 
 
   Clone the repo
