@@ -28,12 +28,13 @@ Design considerations :
     I have 1 test Cloud Formation script : cloudformation\EC2instance.json which is just single host wrapped up in a
     security group. I used that to test the infra code on.
 
-    The Cloud Formation setup for "production" uses an ELB and an auto-scaling group with some maximum and minimum limits.
+    The Cloud Formation setup for "production" uses an ELB and an auto-scaling group with some maximum and minimum
+    limits.
 
     The design is relatively simple, and a quick way to deploy the sinatra app to the internet. Since the app itself
     was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated would be
-    sufficient. (see diagram folder in the repo)  Look there is way more you can do here but I wasn't sure how far to take
-    it.  I will list some possibilities later.
+    sufficient. (see diagram folder in the repo)  Look there is way more you can do here but I wasn't sure how far to
+    take it.  I will list some possibilities later.
 
     Its a 2 tier design with a loadbalancer in front classic kind of single DMZ design.  However if there were database
     servers involved the result would have been quiet different, involving at least another network layer DMZ for the
@@ -84,9 +85,9 @@ Design considerations :
 
       This should get you going :
 
-      #> yum install epel-release
+      #> sudo yum install epel-release
 
-      #> yum install make jq python pypthon-pip awscli ansible ssh bash git
+      #> sudo yum install make jq python pypthon-pip awscli ansible ssh bash git
 
 
   Getting Set Up
