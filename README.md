@@ -7,7 +7,7 @@ NOTES:
 - In each directory there are other README files that contain specific information for that directory's function.
 
 - All hosts are locked down via network ACLs, to get external access I restricted them to my gateway IP.  By default hosts
-granted access to 172.31.0.0/16 which is the VPC network, (for ssh and http in test and ssh only in prod) you can pass in
+are granted access to 172.31.0.0/16 which is the VPC network, (for ssh and http in test and ssh only in prod) you can pass in
 other ranges by modifying the SSHLocation and HTTPLocation variables in the make file.
 
 - I will send AWS access details in the submission email, however this should be able to run on any AWS account provided
@@ -15,7 +15,7 @@ it has a Vpc configured over at least 2 AZs with 2 subnets, one in each AZ and y
 ids and Vpc id.
 
 - I have configured my solution to run in AWS ap-southeast-2 only, using some simple cloud formation templates, Ansible
-and a make file, to "make" it all run. The server builds are based on CentOS 7 AMI (ami-34171d57) and hasn't been tested
+and a make file.... to "make" it all run. The server builds are based on CentOS 7 AMI (ami-34171d57) and hasn't been tested
 on any other OS.
 
 
@@ -32,20 +32,22 @@ Design considerations :
 
     The design is relatively simple, and a quick way to deploy the sinatra app to the internet. Since the app itself
     was quiet basic there weren't too many dependencies.  I decided that a simple config as illustrated would be
-    sufficient. (see diagram folder in the repo)
+    sufficient. (see diagram folder in the repo)  Look there is way more you can do here but I wasn't sure how far to take
+    it.  I will list some possibilities later.
+
     Its a 2 tier design with a loadbalancer in front classic kind of single DMZ design.  However if there were database
     servers involved the result would have been quiet different, involving at least another network layer DMZ for the
     database servers to be hosted in.
 
-    The Autoscalling group is enough to scale the application (by default build on t2.small hosts) and since there is
-    no state, a simple round robin policy ( the default ) is fine, again if state or connection persistency was an
+    The auto-scaling group is enough to scale the application (by default built on t2.small hosts) and since there is
+    no state, a simple round robin policy ( the default ) is fine, again if state or connection persistency were an
     issue the design would have involved a different LB configuration.
 
     The hosts themselves are running firewalld to limit their exposure, I think that more could be done here to improve
-    security, for example running the CIS security benchmark on the server to ensure better hardening.
+    OS security, for example running the CIS security benchmark on the server to ensure better hardening.
 
     So how does the app get on the server ? ...  The Ansible infrastructure code has a sinatra role that runs a
-    git clone from the simple-sinatra-app repo.  
+    git clone from the simple-sinatra-app repo.
 
     How does the Ansible code get on the server ?... The Ansbile code is transferred as a tarball to an S3 bucket
     once testing is complete. The production hosts will pull the tarball down and execute it upon deployment.  This
@@ -53,12 +55,13 @@ Design considerations :
     userdata.  I tired to keep this script as small as possible and have kept most of the infrastructure code within
     Ansible.
 
-    I don't have a pipe line for the the testing past, but the make files could be used for such a purpose. Also
-    there are no server spec test. But I believe they could be applied to this model.  Also e2e tests could be part
-    of that pipeline via the test stack.
+    The infra code can be deployed to the test stack for pre-prod testing, I don't have a pipe line for this,
+    but you could use the funcitons in the make files within CI pipe line.
+    There are no server spec tests. I have put in some simple Ansible tests at the very end using the uri module
+    checking the sinatra and NGINX ports, to keep it simple, but there is room for improvement here.
 
     Code updates can be applied directly to the hosts after deployment, via the Ansible code, but I would recommend
-    instance rebuilds over this.
+    the building of a new stack and failing over to it.
 
     That about sums it up, there is more information about the inner working within the steps below that will give
     you more context on how it works.
@@ -193,9 +196,17 @@ Design considerations :
     (in this case http://ec2-54-252-173-67.ap-southeast-2.compute.amazonaws.com ) If all is okay you can upload the
     code to the S3 bucket for production deployments.
 
-    NOTE: I copy the code to the host rather than using the Ansible locally to push the code, because I was experiencing
-    some intermit internet issues causing very slow ansible runs.
-    If your having trouble connection check the value of SSHLocation in the make file.
+    NOTE:
+      - I copy the code to the host rather than using the Ansible locally to push the code, because I was experiencing
+      some intermit internet issues causing very slow ansible runs.
+      If your having trouble connection check the value of SSHLocation in the make file.
+      - If you execute the deploy_test_config too quickly after the server has deploy, the bootstrapping may not be complete
+      and things like ansible maybe missing.. you may see an error like this :
+
+              sudo: ansible-playbook: command not found
+
+      If you do, just try again in a few seconds.  (I have put a sleep in to work around this for now)
+
     -----------------------------------------------------------
 
   Okay let's upload the code to S3 for the production stack :
@@ -229,7 +240,7 @@ Design considerations :
   So what just happened ?
   -----------------------
 
-    The cloudformation template provisioned an ELB pointing to an autoscalling server group.  The autoscalling
+    The cloudformation template provisioned an ELB pointing to an auto-scaling server group.  The auto-scaling
     group spins up at least 2 servers in the stack for HA locked down by a security group.
     I put as little as possible into the cloudformation template as far as operating system configuration,
     there is a small script in the user data section that does the following :
@@ -260,3 +271,18 @@ Design considerations :
 
 
   And that's it!
+
+
+  Some extra things to add one day to make it better :
+
+      - a build pipe line
+      - a real Cname for the site and some DNS magic to make it go live when the stack is build
+      - better testing
+      - use docker to package the sinatra app
+      - use a WAF to protect the site better
+      - harden the NGNIX config, limiting treads, methods etc
+      - extra Server hardening. (CIS benchmark etc...)
+      - better VPC security and layout
+      - limit access to the S3 bucket to on the subnets required
+      - include the VPC and S3 bucket config in the cloudformation templates
+      - better diagrams

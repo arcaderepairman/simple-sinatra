@@ -1,0 +1,29 @@
+---
+# Just incase the tests are a little impatient
+  - name: "Wait 30 seconds for port {{ rack_port }} to become open on the host"
+    wait_for:
+      port: "{{ rack_port }}"
+      host: "{{ rack_bind }}"
+
+  - name: "Wait 30 seconds for port {{ http_port }} to become open on the host"
+    wait_for:
+      port: "{{ http_port }}"
+      host: "{{ ansible_default_ipv4.address }}"
+
+  - uri:
+      url: "http://localhost:{{ rack_port }}"
+      return_content: yes
+    register: webpage
+
+  - name: "Testing that Sinatra is responding url=http://localhost:{{ rack_port }}"
+    fail:
+    when: "'Hello World!' not in webpage.content"
+
+  - uri:
+      url: "http://{{ ansible_default_ipv4.address }}:{{ http_port }}"
+      return_content: yes
+    register: webpage
+
+  - name: "Testing that NGINX is responding url=http://{{ ansible_default_ipv4.address }}:{{ http_port }}"
+    fail:
+    when: "'Hello World!' not in webpage.content"

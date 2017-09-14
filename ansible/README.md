@@ -1,6 +1,10 @@
 This folder contains the Anisble Infrastructure Code to configure the sinatra servers.
 There are a few roles :
 
+  sinatra.yml contains all the roles and variables require to run the code.  to run this playbook :
+
+    ansible
+
   aws-cfn-bootstrap :
     Installs cfn-init and friends on the CentOS AMI that I am using... it installs from a tarball rather than from
     an rpm... because the rpm is broken.. well at least for CentOS.
@@ -26,7 +30,11 @@ There are a few roles :
      host further. Things like running the CIS Security Benchmarks. I ran out of time add this in, but would definitely be running this in a really situation.
 
   sinatra
-  
+
     The one were it all happens... it downloads the simple-sinatra-app from git hub, sets up some directories runs bundler and creates a
     systemd service to start the server (rackup)... I would probably replace this role and the ruby role with a docker container to make
     deployment easier.
+
+  test
+
+    Test to see if sinatra is actually up and running on the localhost port and that NINX is proxying through to it.

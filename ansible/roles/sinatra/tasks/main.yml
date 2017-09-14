@@ -6,7 +6,7 @@
       force: yes
 
   - name: installs required gems
-    command: "/bin/scl enable rh-ruby22 'bundle install --binstubs=../{{ bundle_dir }} --path=../gems'"
+    command: "/bin/scl enable rh-ruby22 'bundle install --binstubs=../{{ bundle_dir }} --path=../{{ gem_dir }}'"
     args:
         chdir: "{{ www_dir }}/{{ sinatra_dir }}"
         creates: "{{ www_dir }}/{{ bundle_dir }}"
@@ -14,7 +14,7 @@
   - name: create sinatra group
     group:
       name: "{{ sinatra_user }}"
-      gid: 100000
+      gid: "{{ sinatra_uid }}"
       state: present
 
   - name: create user for sinatra
@@ -23,16 +23,7 @@
       shell: /sbin/nologin
       comment: "Sinatra Server"
       group: "{{ sinatra_user }}"
-      uid: 100000
-
-  - name: setup sinatra service in systemd
-    template:
-      src: sinatra.service
-      dest: /usr/lib/systemd/system/sinatra.service
-      owner: root
-      group: root
-      mode: 0644
-    notify: daemon-reload
+      uid: "{{ sinatra_uid }}"
 
   - name: setup rackup startup script
     template:
@@ -43,7 +34,17 @@
       mode: 0755
     notify: restart sinatra.service
 
+  - name: setup sinatra service in systemd
+    template:
+      src: sinatra.service
+      dest: /usr/lib/systemd/system/sinatra.service
+      owner: root
+      group: root
+      mode: 0644
+    notify: daemon-reload
+
   - name: enable sinatra service
     systemd:
       name: sinatra.service
       enabled: yes
+      state: started

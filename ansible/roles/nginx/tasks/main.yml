@@ -19,7 +19,7 @@
 
   - name: Changes permissions to web folder
     file:
-      path: /var/www
+      path: "{{ www_dir }}"
       owner: root
       group: root
       mode: 0755

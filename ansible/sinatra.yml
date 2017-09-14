@@ -2,10 +2,24 @@
 - name: Provision server to run sinatra
   hosts: all
 
+  vars:
+    www_dir: /var/www
+    bundle_dir: bundle
+    gem_dir: gems
+    sinatra_user: sinatra
+    sinatra_uid: '10000'
+    sinatra_gid: '10000'
+    sinatra_dir: sinatra
+    rack_port: '9292'
+    http_port: '80'
+    rack_bind: '127.0.0.1'
+
+
   roles:
     - aws-cfn-bootstrap
     - security
     - git
-    - nginx
     - ruby
+    - nginx
     - sinatra
+    - tests

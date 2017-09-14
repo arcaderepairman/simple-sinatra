@@ -3,3 +3,5 @@
   systemd: name=sinatra.service state=reloaded enabled=yes daemon_reload=yes
 - name: restart sinatra.service
   service: name=sinatra.service state=restarted enabled=yes
+- name: start sinatra.service
+  service: name=sinatra.service state=started enabled=yes

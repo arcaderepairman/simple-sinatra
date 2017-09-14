@@ -1,7 +1,1 @@
 ---
-www_dir: /var/www
-sinatra_dir: sinatra
-bundle_dir: bundle
-rack_port: '9292'
-rack_bind: '127.0.0.1'
-sinatra_user: sinatra

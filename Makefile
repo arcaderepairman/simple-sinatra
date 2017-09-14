@@ -23,6 +23,7 @@ build_test_infra:
 	@RETURN=$?
 	@echo "Waiting... this may take a while"
 	@aws cloudformation wait stack-create-complete --stack-name ${TEST_STACK_NAME}
+	@sleep 10  # just a wait a little while incase the boot straping hasn't finished.
 	@echo "${TEST_STACK_NAME} Created!"
 	@echo "Your Test URL is :"
 	@aws cloudformation describe-stacks --stack-name ${TEST_STACK_NAME} | jq '.Stacks[] .Outputs[3] .OutputValue' -r
