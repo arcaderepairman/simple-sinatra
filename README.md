@@ -123,7 +123,7 @@ Design considerations :
 
   Run make to see help on the available options.
 
-
+    #> cd simple-sinatra
     #> make
 
     build_test_infra:      Using cloud formation build test infrastructure stack testsinatrastack
